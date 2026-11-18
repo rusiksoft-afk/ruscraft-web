@@ -15,6 +15,7 @@ export CFLAGS="$CFLAGS -D_POSIX_SOURCE=1"
 export CXXFLAGS="$CXXFLAGS -D_POSIX_SOURCE=1"
 emcmake cmake \
   -DCMAKE_INSTALL_PREFIX="$INSTALL_DIR" \
+  -DZSTD_BUILD_SHARED=OFF \
   "$SOURCES_DIR/zstd/build/cmake"
 
 emmake make
