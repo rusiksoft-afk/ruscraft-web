@@ -4,7 +4,8 @@
 [Luanti (ex-Minetest)](https://www.luanti.org/) — полностью в браузере, интерфейс на
 русском языке.
 
-**Статус:** проект на стадии планирования (S0 выполнен). Смотри `docs/PLAN.md`.
+**Статус:** каркас и конвейер готовы к первому прогону (S0 ✅; S1/S3/S4 частично —
+ждём GitHub-репозиторий, дальше гейт S2 «ваниль в браузере»). Смотри `docs/PLAN.md`.
 
 ## Как это устроено
 
@@ -38,7 +39,15 @@ node scripts/serve.js --selftest   # только проверка заголо�
 | `docs/LICENSES.md` | лицензии и атрибутция (LGPL/MIT/CC BY-SA) |
 | `CONSTRAINTS.md` | Quality bar проекта |
 | `scripts/serve.js` | локальный стат-сервер с COOP/COEP |
-| `overlay/` | наша брендовая оболочка (после S3) |
+| `.github/workflows/ruscraft-build.yml` | CI: docker-сборка wasm → артефакт `ruscraft-www` |
+| `deploy.sh` | хук сборки: игровой пак Minetest Game (пин `versions.lock`) |
+| `versions.lock` | зафиксированные ревизии движка/харнесса/игры |
+| `scripts/fetch-artifact.ps1` | загрузка артефакта CI на эту машину (нужен `gh`) |
+| `proxy/` | план self-hosted WSS-прокси (lwproxy), шаг S6 |
+| `deploy/nginx.conf` | шаблон выкладки на VPS (шаблон S7) |
+| `Dockerfile` | Linux-образ сборки (emsdk + зависимости + Luanti) |
+| `static/` | наша русская оболочка лаунчера (форк статики харнесса) |
+| `docs/UPSTREAM-luanti-wasm.md` | оригинальный README харнесса |
 | `www/` | выходные артефакты сборки (в .gitignore) |
 
 ## Лицензии
