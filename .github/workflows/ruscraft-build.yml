@@ -77,6 +77,10 @@ jobs:
         if: always()   # и при красном смоук-тесте: артефакт нужен для диагностики
         with:
           name: ruscraft-www
-          path: www/
+          path: |
+            www/
+            www/.htaccess
+            www/*/.htaccess
+            www/*/packs/.htaccess
           if-no-files-found: ignore
           retention-days: 30
