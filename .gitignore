@@ -1,0 +1,8 @@
+www/
+build*/
+emsdk/
+vendor/luanti-wasm/
+node_modules/
+*.log
+.research/
+.DS_Store
