@@ -1,0 +1,70 @@
+name: ruscraft-build
+
+# Полная сборка Luanti→WASM (40–90 мин). Запуск: вручную (workflow_dispatch)
+# или тегом v* (для будущих релизов). PUSH-сборка не нужна — дорого.
+on:
+  workflow_dispatch:
+    inputs:
+      build_kind:
+        description: "Профиль сборки"
+        required: true
+        default: release
+        type: choice
+        options: [release, profile, debug]
+
+env:
+  HARNESS_IMAGE: ruscraft-harness
+
+jobs:
+  web:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 330
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Проверка пинов (без latest)
+        run: |
+          test -f versions.lock
+          grep -q '^minetest_game=[0-9a-f]\{40\}' versions.lock
+          grep -q '^luanti-wasm=[0-9a-f]\{40\}' versions.lock
+
+      - name: Docker build (emsdk + зависимости + Luanti + www)
+        run: |
+          docker build --build-arg BUILD_KIND="${{ inputs.build_kind }}" -t "$HARNESS_IMAGE" .
+          # размер образа в лог — для контроля регрессий
+          docker images "$HARNESS_IMAGE"
+
+      - name: Извлечение www/ из образа
+        run: |
+          mkdir -p out
+          docker run --rm -v "$PWD/out:/out" "$HARNESS_IMAGE" \
+            bash -c 'cp -r /luanti-wasm/www/* /out/ && echo "--- www:" && du -sh /out/* && ls -R /out | head -60'
+
+      - name: Смоук-тест структуры артефакта
+        run: |
+          test -f out/.htaccess
+          UUID=$(find out -maxdepth 1 -type d -regex '.*/[0-9a-f]\{12\}' -printf '%f')
+          echo "release uuid: $UUID"
+          test -n "$UUID"
+          test -f "out/$UUID/luanti.wasm"
+          test -f "out/$UUID/luanti.js"
+          test -f "out/$UUID/packs/base.pack"
+          test -f "out/$UUID/packs/minetest_game.pack"   # RusCraft: игровой пак
+          # htaccess апстрима обязателен для хостингов с Apache; для nginx см. deploy/
+          grep -i "Cross-Origin-Embedder-Policy" out/.htaccess
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ruscraft-www
+          path: out/
+          retention-days: 30
+
+  # Никогда не тянет 40-минутную сборку ради документации.
+  docs:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: markdown lint (поверхностный)
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq markdownlint-cli
+          markdownlint README.md CONSTRAINTS.md 2>/dev/null || true # пока подсказка, не гейт

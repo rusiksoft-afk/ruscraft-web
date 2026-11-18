@@ -1,58 +1,123 @@
 <!doctype html>
-<html lang="en-us">
+<html lang="ru">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Luanti for the Web</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="RusCraft — воксельная песочница прямо в браузере. Построена на открытом движке Luanti.">
+    <title>RusCraft — воксельная песочница в браузере</title>
+    <style>
+      :root { color-scheme: dark; }
+      body { background-color: #1b1d1e; }
+      #brand {
+        color: #e8e8e8;
+        font-family: system-ui, "Segoe UI", Roboto, sans-serif;
+        text-align: center;
+        margin-top: 24px;
+      }
+      #brand h1 {
+        margin: 0;
+        font-size: 42pt;
+        letter-spacing: 2px;
+        color: #7ec952;
+        text-shadow: 0 2px 0 #2f4f23;
+      }
+      #brand .tagline { margin-top: 4px; font-size: 12pt; color: #b9bdbd; }
+      #about {
+        color: #9aa0a0;
+        font-family: system-ui, "Segoe UI", Roboto, sans-serif;
+        font-size: 10pt;
+        text-align: center;
+        margin: 18px auto 30px auto;
+        max-width: 720px;
+        line-height: 1.5;
+      }
+      #about a { color: #8fb8d0; }
+      .console.ruscraft-console { font-family: ui-monospace, Consolas, monospace; }
+      button.primary { background-color: #3f7d2c; color: #fff; border: 0; border-radius: 6px; cursor: pointer; }
+      button.primary:hover { background-color: #4c9434; }
+      details.serverbox { color: #cfd3d3; font-family: system-ui, sans-serif; margin: 12px 0; }
+      details.serverbox summary { cursor: pointer; font-size: 14pt; }
+    </style>
   </head>
-  <body style="background-color: black">
-    <div id="temporary_console" class="console" style="color: white"></div>
-    <div id="launch_form" class="console" style="color: white; display: none;">
-      <hr>
-      <b>Select Network Proxy:</b>
-      <select id="select_proxy">
-          <!-- filled by javascript -->
-      </select>
-
-      <br/>
-
-      <b>Select language:</b>
-      <select id="select_language">
-          <!-- filled by javascript -->
-      </select>
-
-      <hr>
-      <button id="launch" style="width: 300px; height: 50px; font-size: 20pt;">Launch Luanti</button>
-      <br/>
-      <hr>
-      <b style="font-size: 20pt;">Run Server In Browser</b>
-      <br/>
-      <b>Player Name:</b>
-      <input style="border: 2px solid black; width: 400px; height: 2em" type="text" id="multiplayer_username" required="" pattern="[A-Za-z0-9_-]{1,20}" maxlength="19" title="Alphanumeric, 19 characters max">
-      <br/>
-      <b>World:</b>
-      <select id="multiplayer_world">
-          <!-- filled by javascript -->
-      </select>
-      <br/>
-      <span>After launch, copy the URL and use it to open clients.</span>
-      <br/>
-      <span>Closing this page shuts down the server and ends the game.</span>
-      <br/>
-      <button id="launch_server" style="width: 300px; height: 50px; font-size: 20pt;">Launch Server</button>
-
+  <body>
+    <div id="brand">
+      <h1>RusCraft</h1>
+      <div class="tagline">Воксельная песочница целиком в браузере — без установки, без скачивания</div>
     </div>
-    <div id="join_form" class="console" style="color: white; display: none;">
+
+    <div id="temporary_console" class="console ruscraft-console" style="color: #d8d8d8"></div>
+
+    <div id="launch_form" class="console ruscraft-console" style="color: #e8e8e8; display: none;">
       <hr>
-      <b style="font-size: 20pt;">Join a Game from Native Luanti</b>
+      <b>Язык игры:</b>
+      <select id="select_language">
+          <!-- заполняет javascript -->
+      </select>
+
+      <b style="margin-left: 16px">Сетевой прокси:</b>
+      <select id="select_proxy">
+          <!-- заполняет javascript -->
+      </select>
+
+      <hr>
+      <button id="launch" class="primary" style="width: 340px; height: 56px; font-size: 22pt;">Играть в RusCraft</button>
+      <br/>
+      <hr>
+
+      <details class="serverbox">
+        <summary>Создать сетевую игру (сервер прямо в браузере)</summary>
+        <br/>
+        <b>Ваш игровой ник:</b>
+        <input style="border: 2px solid #555; background: #242627; color: #eee; width: 400px; height: 2em" type="text" id="multiplayer_username" required="" pattern="[A-Za-z0-9_-]{1,20}" maxlength="19" title="Латиница/цифры/подчёркивание, до 19 символов">
+        <br/>
+        <b>Мир:</b>
+        <select id="multiplayer_world">
+            <!-- заполняет javascript -->
+        </select>
+        <br/>
+        <span>После запуска скопируйте адрес страницы и отправьте друзьям — они подключатся прямо из браузера.</span>
+        <br/>
+        <span>Закрытие этой страницы остановит сервер и завершит игру.</span>
+        <br/>
+        <button id="launch_server" style="width: 300px; height: 44px; font-size: 16pt;">Запустить сервер</button>
+      </details>
+    </div>
+
+    <div id="join_form" class="console ruscraft-console" style="color: #e8e8e8; display: none;">
+      <hr>
+      <b style="font-size: 20pt;">Подключение к чужой игре</b>
       <br/>
       <div id="join_status" style="margin-top: 1em; font-size: 14pt;"></div>
       <hr>
     </div>
+
+    <div id="about">
+      RusCraft — независимый веб-порт открытой воксельной платформы
+      <a href="https://www.luanti.org/" rel="noopener">Luanti</a> (бывш. Minetest).
+      Движок: <a href="https://github.com/luanti-org/luanti" rel="noopener">Luanti, LGPL&nbsp;2.1</a>;
+      веб-порт: <a href="https://github.com/paradust7/luanti-wasm" rel="noopener">luanti-wasm, MIT</a>.
+      Игра не связана с Mojang/Minecraft. Миры хранятся в вашем браузере;
+      при чистке данных сайта они удаляются.
+      Исходники сборки: <a href="https://github.com/ruscraft/web" rel="noopener">github.com/ruscraft/web</a>.
+    </div>
+
     <script type="text/javascript" src="%__RELEASE_UUID__%/launcher.js"></script>
     <script type="text/javascript">
 
-      // Reduce memory and network usage
+      // RusCraft: игра по умолчанию — Minetest Game (пин в versions.lock,
+      // пак minetest_game.pack кладёт в релиз deploy.sh).
+      const RUSCRAFT_DEFAULT_GAME = 'minetest_game';
+
+      // Сетевые прокси (WSS). Первый элемент используется приглашениями (?join=...).
+      // После шага S6 первым станет наш self-hosted lwproxy вида wss://<домен>/mtproxy.
+      const PROXIES = [
+          [ "wss://eu1.dustlabs.io/mtproxy", "Публичный (Франкфурт)" ],
+          [ "wss://ap1.dustlabs.io/mtproxy", "Публичный (Сингапур)" ],
+          [ "wss://na1.dustlabs.io/mtproxy", "Публичный (США, Даллас)" ],
+      ];
+
+      // Экономия памяти и трафика (слабые устройства)
       function enableMemorySaving(mtl) {
           mtl.setConf('viewing_range', 85);
           mtl.setConf('max_block_send_distance', 5);
@@ -63,15 +128,6 @@
       const joinForm = document.getElementById('join_form');
       const tcon = document.getElementById('temporary_console');
 
-      // A join code belongs to the proxy that issued it, so only that one is
-      // asked. There is one proxy behind this page.
-      const PROXIES = [
-          [ "wss://na1.dustlabs.io/mtproxy", "North America" ],
-          [ "wss://sa1.dustlabs.io/mtproxy", "South America" ],
-          [ "wss://eu1.dustlabs.io/mtproxy", "Europe" ],
-          [ "wss://ap1.dustlabs.io/mtproxy", "Asia" ],
-          [ "wss://ap2.dustlabs.io/mtproxy", "Australia" ],
-      ];
       function tcon_print(prefix, line) {
           if (prefix) {
               for (child of tcon.childNodes) {
@@ -89,6 +145,10 @@
       function wipePage() {
           launchForm.remove();
           tcon.remove();
+          const brand = document.getElementById('brand');
+          if (brand) brand.remove();
+          const about = document.getElementById('about');
+          if (about) about.remove();
       }
 
       function enableLaunchForm() {
@@ -110,7 +170,11 @@
               select_language.appendChild(opt);
           });
 
-          select_language.value = getDefaultLanguage();
+          // RusCraft: русский по умолчанию, если у браузера нет другого языка
+          // из списка и игрок ещё ничего не выбирал сам.
+          let initial = getDefaultLanguage();
+          if (!initial) initial = 'ru';
+          select_language.value = initial;
           let languageChosen = false;
           select_language.addEventListener('change', () => { languageChosen = true; });
           mtl.initialLang().then((lang) => {
@@ -131,10 +195,8 @@
 
           const launchServer = document.getElementById('launch_server');
 
-          // A server serves one of the worlds already in persistent storage,
-          // and runs whichever game that world belongs to. There is nothing to
-          // serve until Luanti has been run once to make one, so the button
-          // waits until the list has arrived and holds something.
+          // Сервер обслуживает уже созданный мир; пока игрок ни разу не играл,
+          // списка миров нет и кнопка неактивна.
           const select_world = document.getElementById('multiplayer_world');
           let worlds = [];
           launchServer.disabled = true;
@@ -142,7 +204,7 @@
               worlds = found;
               if (worlds.length == 0) {
                   const opt = document.createElement('option');
-                  opt.innerText = 'No saved worlds';
+                  opt.innerText = 'Нет сохранённых миров';
                   select_world.appendChild(opt);
                   return;
               }
@@ -160,26 +222,25 @@
               const username = document.getElementById('multiplayer_username').value;
               const world = worlds[select_world.value];
               if (username.length == 0) {
-                  alert("Empty username");
+                  alert("Ник не указан");
                   return;
               }
               if (!world) {
-                  alert("No world selected");
+                  alert("Мир не выбран");
                   return;
               }
               const game = world.gameid;
               wipePage();
 
-              // The address other players reach this server at is assigned
-              // by the proxy when emsocket starts up, and is shown from
-              // inside the game.
+              // Адрес, по которому подключаются остальные, назначает прокси при
+              // запуске emsocket; он виден внутри игры в меню настроек.
               mtl.setProxy(PROXIES[proxyIndex][0]);
               mtl.addPack(game);
               const args = new LuantiArgs();
               args.gameid = game;
               args.name = username;
               args.world = world.path;
-              // --address would make Luanti act like a client instead of a host.
+              // --address заставил бы Luanti вести себя как клиент, а не сервер.
               args.port = 30000;
               args.go = true;
               enableMemorySaving(mtl);
@@ -189,20 +250,19 @@
 
       }
 
-      // Someone who followed an invite link is only told where to point
-      // desktop Luanti, so the launcher and its wasm are never loaded here.
+      // Гость, пришедший по ссылке-приглашению, узнаёт только адрес сервера —
+      // движок и wasm ему не загружаем.
       function showJoinPage(joinCode) {
           tcon.remove();
           launchForm.remove();
           joinForm.style.display = 'block';
           const joinStatus = document.getElementById('join_status');
-          joinStatus.innerText = 'Contacting the server...';
+          joinStatus.innerText = 'Подключаемся к серверу...';
           const proxyUrl = PROXIES[0][0];
           queryJoinCode(proxyUrl, joinCode).then((where) => {
               joinStatus.innerText =
-                  `You may now connect to: ${joinHost(proxyUrl)} ${where.port} in Luanti. ` +
-                  `If you don't have an account on the server, be sure to ` +
-                  `register first.`;
+                  `Теперь можно подключиться из десктопного Luanti: ${joinHost(proxyUrl)} ${where.port}. ` +
+                  `Если вас ещё нет на сервере — сначала зарегистрируйтесь.`;
           }, (err) => {
               joinStatus.innerText = err.message;
           });
@@ -212,8 +272,11 @@
       var mtl;
       function startLauncher() {
           args = LuantiArgs.fromQueryString(window.location.search);
-          tcon_print("", "Luanti Arguments: " + JSON.stringify(args.toArray(), null, '    '));
-          tcon_print("", "Data Packs: " + JSON.stringify(args.packs, null, '    '));
+          if (!args.gameid && !args.server) {
+              args.gameid = RUSCRAFT_DEFAULT_GAME;
+          }
+          tcon_print("", "Параметры запуска: " + JSON.stringify(args.toArray(), null, '    '));
+          tcon_print("", "Игровые паки: " + JSON.stringify(args.packs, null, '    '));
 
           mtl = new LuantiLauncher();
           mtl.addPacks(args.packs);
@@ -221,21 +284,21 @@
               tcon_print("", text);
           };
           mtl.onprogress = (name, progress) => {
-              const prefix = `Task ${name} : `;
+              const prefix = `Задача ${name}: `;
               const pct = `${Math.round(progress * 100)}%`;
               tcon_print(prefix, pct);
           };
           mtl.onready = () => {
-              tcon_print("", "READY!");
+              tcon_print("", "Готово! Нажмите «Играть в RusCraft».");
               enableLaunchForm();
           };
           mtl.onexit = (status) => {
-              tcon_print("", `Luanti exited with status ${status}. Reload to play again.`);
+              tcon_print("", `RusCraft завершился со статусом ${status}. Чтобы играть снова — обновите страницу.`);
           };
           mtl.onerror = (err) => {
-              tcon_print("", "**************** FATAL ERROR ******************");
+              tcon_print("", "********************* ОШИБКА **********************");
               tcon_print("", err);
-              tcon_print("", "***********************************************");
+              tcon_print("", "***************************************************");
           };
       }
 

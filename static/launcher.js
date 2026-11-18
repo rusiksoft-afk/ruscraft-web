@@ -241,23 +241,23 @@ const rtHTML = `
   </div>
 
   <div id="console_dock" style="display: none">
-    <div id="console_splitter" title="Drag to resize the console"></div>
+    <div id="console_splitter" title="Потяните, чтобы изменить размер консоли"></div>
     <textarea id="console_output" class="console" readonly></textarea>
   </div>
 
   <div id="settings_panel">
-    <button id="settings_button" title="Settings" aria-label="Settings" aria-expanded="false" aria-haspopup="true" onclick="settingsToggle()">
+    <button id="settings_button" title="Настройки" aria-label="Настройки" aria-expanded="false" aria-haspopup="true" onclick="settingsToggle()">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
         <path fill-rule="evenodd" d="M22.86 10.28A11.0 11.0 0 0 1 22.86 13.72L19.29 13.75A7.5 7.5 0 0 1 18.39 15.92L20.90 18.47A11.0 11.0 0 0 1 18.47 20.90L15.92 18.39A7.5 7.5 0 0 1 13.75 19.29L13.72 22.86A11.0 11.0 0 0 1 10.28 22.86L10.25 19.29A7.5 7.5 0 0 1 8.08 18.39L5.53 20.90A11.0 11.0 0 0 1 3.10 18.47L5.61 15.92A7.5 7.5 0 0 1 4.71 13.75L1.14 13.72A11.0 11.0 0 0 1 1.14 10.28L4.71 10.25A7.5 7.5 0 0 1 5.61 8.08L3.10 5.53A11.0 11.0 0 0 1 5.53 3.10L8.08 5.61A7.5 7.5 0 0 1 10.25 4.71L10.28 1.14A11.0 11.0 0 0 1 13.72 1.14L13.75 4.71A7.5 7.5 0 0 1 15.92 5.61L18.47 3.10A11.0 11.0 0 0 1 20.90 5.53L18.39 8.08A7.5 7.5 0 0 1 19.29 10.25L22.86 10.28ZM15.40 12.00A3.4 3.4 0 0 0 8.60 12.00A3.4 3.4 0 0 0 15.40 12.00Z"/>
       </svg>
     </button>
     <div id="settings_menu" style="display: none">
-      <button id="settings_exit" onclick="exitLuanti()" title="Shut the game down, as Ctrl-C would">Exit Luanti</button>
-      <button id="settings_console_toggle" onclick="consoleToggle()">Show Console</button>
-      <div id="settings_address_label">Virtual IP Address</div>
+      <button id="settings_exit" onclick="exitLuanti()" title="Остановить RusCraft, как Ctrl-C для обычного процесса">Выйти из RusCraft</button>
+      <button id="settings_console_toggle" onclick="consoleToggle()">Показать консоль</button>
+      <div id="settings_address_label">Виртуальный IP-адрес</div>
       <span id="settings_address" onclick="selectAddress()"></span>
-      <button id="settings_address_copy" onclick="copyAddress()">Copy</button>
-      <button id="settings_invite_copy" onclick="copyInviteLink()" title="Copy a link that lets someone join from desktop Luanti">Invite Link</button>
+      <button id="settings_address_copy" onclick="copyAddress()">Копировать</button>
+      <button id="settings_invite_copy" onclick="copyInviteLink()" title="Скопировать ссылку, по которой в эту игру можно подключиться из десктопного Luanti">Ссылка-приглашение</button>
     </div>
   </div>
 `;
@@ -862,7 +862,7 @@ function fitTerminal() {
 function syncConsoleState() {
     const shown = consoleShown();
     if (settingsConsoleToggle) {
-        settingsConsoleToggle.innerText = shown ? 'Hide Console' : 'Show Console';
+        settingsConsoleToggle.innerText = shown ? 'Скрыть консоль' : 'Показать консоль';
     }
     if (settingsButton) {
         settingsButton.classList.toggle('over_console', shown || terminalMode);
@@ -985,10 +985,10 @@ var settingsJoinCode = '';
 function refreshAddress() {
     const previous = settingsAddressText;
     settingsAddressText = readAddress();
-    settingsAddress.innerText = settingsAddressText || 'Not assigned yet';
+    settingsAddress.innerText = settingsAddressText || 'Пока не назначен';
     settingsAddress.classList.toggle('unassigned', settingsAddressText == '');
     settingsAddressCopy.disabled = (settingsAddressText == '');
-    setCopyLabel('Copy');
+    setCopyLabel('Копировать');
     // The join code is issued with the address and changes only when it
     // does. Reading it costs a round trip to the I/O thread, so the menu
     // does not pay for one every time it opens.
@@ -996,7 +996,7 @@ function refreshAddress() {
         settingsJoinCode = settingsAddressText ? readJoinCode() : '';
     }
     settingsInviteCopy.disabled = (settingsJoinCode == '');
-    setInviteLabel('Invite Link');
+    setInviteLabel('Ссылка-приглашение');
 }
 
 // Puts the whole address in the document selection, so it can be copied by
@@ -1016,8 +1016,8 @@ var copyLabelTimer = 0;
 function setCopyLabel(text) {
     clearTimeout(copyLabelTimer);
     settingsAddressCopy.innerText = text;
-    if (text != 'Copy') {
-        copyLabelTimer = setTimeout(() => { setCopyLabel('Copy'); }, 1500);
+    if (text != 'Копировать') {
+        copyLabelTimer = setTimeout(() => { setCopyLabel('Копировать'); }, 1500);
     }
 }
 
@@ -1029,7 +1029,7 @@ function copyAddress() {
     // Select it as well, so it can still be copied by hand if the clipboard
     // is refused (navigator.clipboard needs a secure context).
     selectAddress();
-    const copied = () => { setCopyLabel('Copied'); };
+    const copied = () => { setCopyLabel('Скопировано'); };
     const failed = () => { setCopyLabel('Ctrl-C'); };
     if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(address).then(copied, failed);
@@ -1046,8 +1046,8 @@ var inviteLabelTimer = 0;
 function setInviteLabel(text) {
     clearTimeout(inviteLabelTimer);
     settingsInviteCopy.innerText = text;
-    if (text != 'Invite Link') {
-        inviteLabelTimer = setTimeout(() => { setInviteLabel('Invite Link'); }, 1500);
+    if (text != 'Ссылка-приглашение') {
+        inviteLabelTimer = setTimeout(() => { setInviteLabel('Ссылка-приглашение'); }, 1500);
     }
 }
 
@@ -1063,8 +1063,8 @@ function copyInviteLink() {
     if (!joinCode) {
         return;
     }
-    const copied = () => { setInviteLabel('Copied'); };
-    const failed = () => { setInviteLabel('Failed'); };
+    const copied = () => { setInviteLabel('Скопировано'); };
+    const failed = () => { setInviteLabel('Не вышло'); };
     if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(inviteLink(joinCode)).then(copied, failed);
         return;
@@ -1109,7 +1109,7 @@ function joinHost(proxyUrl) {
 function queryJoinCode(proxyUrl, joinCode) {
     return new Promise((resolve, reject) => {
         if (!/^[0-9a-f]{16}$/.test(joinCode)) {
-            reject(new Error("That invite link is malformed."));
+            reject(new Error("Приглашение по этой ссылке неверно оформлено."));
             return;
         }
         const ws = new WebSocket(proxyUrl);
@@ -1129,7 +1129,7 @@ function queryJoinCode(proxyUrl, joinCode) {
         };
         ws.onopen = () => { ws.send('JOIN ' + joinCode); };
         ws.onerror = () => { settle(null, new Error("Could not reach the server.")); };
-        ws.onclose = () => { settle(null, new Error("The server closed before answering.")); };
+        ws.onclose = () => { settle(null, new Error("Сервер закрыл соединение, ничего не ответив.")); };
         ws.onmessage = (e) => {
             const parts = (typeof e.data === 'string') ? e.data.split(' ') : [];
             if (parts.length >= 3 && parts[0] === 'JOIN' && parts[1] === 'OK') {
@@ -1141,7 +1141,7 @@ function queryJoinCode(proxyUrl, joinCode) {
             }
             // The usual reason: the host closed their game, so the invite
             // went with it.
-            settle(null, new Error("That invite is no longer valid. Ask for a new link."));
+            settle(null, new Error("Это приглашение больше не действительно. Попросите новую ссылку."));
         };
     });
 }
@@ -1230,7 +1230,7 @@ Module['mainScriptUrlOrBlob'] = RELEASE_DIR + '/worker.js';
 
 Module['onFullScreen'] = () => { fixGeometry(); };
 window.onerror = function(event) {
-    consolePrint('Exception thrown, see JavaScript console');
+    consolePrint('Исключение JavaScript, подробности в консоли браузера');
 };
 
 function resizeCanvas(width, height) {
@@ -1581,13 +1581,13 @@ const busyCSS = `
 const busyHTML = `
   <div id="luanti_busy_panel" role="alertdialog" aria-modal="true"
        aria-labelledby="luanti_busy_title" aria-describedby="luanti_busy_text">
-    <h2 id="luanti_busy_title">Luanti is running in another window</h2>
-    <p id="luanti_busy_text">Only one window at a time can use the saved games
-      and settings stored in this browser. Close the other window, then try
-      again.</p>
+    <h2 id="luanti_busy_title">RusCraft уже открыт в другом окне</h2>
+    <p id="luanti_busy_text">Одновременно только одно окно может использовать миры
+      и настройки, сохранённые в этом браузере. Закройте другое окно и
+      попробуйте снова.</p>
     <div id="luanti_busy_buttons">
-      <button id="luanti_busy_cancel" type="button">Cancel</button>
-      <button id="luanti_busy_retry" type="button">Try Again</button>
+      <button id="luanti_busy_cancel" type="button">Отмена</button>
+      <button id="luanti_busy_retry" type="button">Попробовать снова</button>
     </div>
   </div>
 `;
@@ -1823,7 +1823,7 @@ async function openStorageRoot() {
         // mounts at /luanti before it tries to.
         await opfsGetDirectory(root, PACK_DB_DIR, true);
     } catch (err) {
-        consolePrint(`Could not open persistent storage: ${err}`);
+        consolePrint(`Не удалось открыть постоянное хранилище: ${err}`);
         return null;
     }
     return root;
@@ -2017,7 +2017,7 @@ class StorageLock {
         try {
             reply = await this.#ask({ cmd: 'lock', path: LOCK_FILE });
         } catch (err) {
-            alert(`Could not lock persistent storage: ${err.message}`);
+            alert(`Не удалось получить монопольную блокировку хранилища: ${err.message}`);
             return false;
         }
         if (reply.ok) {
@@ -2028,7 +2028,7 @@ class StorageLock {
             reply.error == 'InvalidStateError') {
             return false;
         }
-        consolePrint(`Could not lock persistent storage: ${reply.error}`);
+        consolePrint(`Не удалось захватить блокировку хранилища: ${reply.error}`);
         return true;
     }
 
@@ -2094,7 +2094,7 @@ function getDefaultStorage() {
     }
     const storage = params.get("storage");
     if (storage != 'auto' && storage != 'memory') {
-        alert(`Invalid storage parameter: ${storage}`);
+        alert(`Недопустимый параметр storage: ${storage}`);
         return 'auto';
     }
     return storage;
@@ -2604,7 +2604,7 @@ class LuantiLauncher {
     // Sets language in minetest.conf
     setLang(lang) {
         if (!SUPPORTED_LANGUAGES_MAP.has(lang)) {
-            alert(`Invalid code in setLang: ${lang}`);
+            alert(`Недопустимый код языка в setLang: ${lang}`);
         }
         this.overrideConf("language", lang);
     }
@@ -2783,7 +2783,7 @@ class LuantiLauncher {
             if (this.onerror) {
                 this.onerror(`${err}`);
             } else {
-                alert(`Error while loading ${packUrl}. Please refresh page`);
+                alert(`Ошибка загрузки ${packUrl}. Обновите страницу`);
             }
             throw new Error(`${err}`);
         }
@@ -2900,7 +2900,7 @@ class LuantiLauncher {
         fixGeometry();
         if (terminalMode) {
             startTerminal().catch((err) => {
-                consolePrint(`Could not start the terminal: ${err.message}`);
+                consolePrint(`Не удалось запустить терминал: ${err.message}`);
             });
         }
         if (this.conf.size > 0 || this.confOverrides.size > 0) {
@@ -3001,7 +3001,7 @@ function findDefaultLanguage() {
         if (SUPPORTED_LANGUAGES_MAP.has(lang)) {
             return lang;
         }
-        alert(`Invalid lang parameter: ${lang}`);
+        alert(`Недопустимый параметр lang: ${lang}`);
         return 'en';
     }
 
