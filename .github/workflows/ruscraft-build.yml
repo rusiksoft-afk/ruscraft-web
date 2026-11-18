@@ -58,13 +58,3 @@ jobs:
           name: ruscraft-www
           path: out/
           retention-days: 30
-
-  # Никогда не тянет 40-минутную сборку ради документации.
-  docs:
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@v4
-      - name: markdown lint (поверхностный)
-        run: |
-          sudo apt-get update -qq && sudo apt-get install -y -qq markdownlint-cli
-          markdownlint README.md CONSTRAINTS.md 2>/dev/null || true # пока подсказка, не гейт
