@@ -1,0 +1,46 @@
+name: ruscraft-proxy-build
+
+# Собирает lwproxy (WSS-прокси мультиплеера) для нашего VPS (ubuntu-24.04 host,
+# runtime-контейнер debian:bookworm-slim). Бинарник едет артефактом; на сервер
+# его кладёт деплой-скрипт. Пин ревизии — versions.lock (lwproxy=...).
+on:
+  workflow_dispatch:
+
+env:
+  LWPROXY_SHA: fc747956347c86d1a556ec756b698e4ac0e11cb9
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: paradust7/lwproxy
+          ref: ${{ env.LWPROXY_SHA }}
+          path: proxy-src
+
+      - name: Проверка совпадения пина с versions.lock
+        run: |
+          grep -q "^lwproxy=${LWPROXY_SHA}" versions.lock || {
+            echo "versions.lock расходится с LWPROXY_SHA в workflow"; exit 1; }
+
+      - name: cargo build --release (в контейнере rust, glibc как у runtime)
+        run: |
+          docker run --rm -v "$PWD/proxy-src:/src" -w /src rust:1-bookworm \
+            bash -c 'cargo build --release && strip target/release/lwproxy'
+
+      - name: Смоук-тест бинарника
+        run: |
+          file proxy-src/target/release/lwproxy
+          proxy-src/target/release/lwproxy --help | head -5
+          printf '[[serve]]\nprotocol="ws"\nbind_address="127.0.0.1:9999"\n[http_proxy]\nallowed_hosts=[]\n' > /tmp/s.toml
+          timeout 10 proxy-src/target/release/lwproxy --config /tmp/s.toml & sleep 3
+          ss -tln | grep 9999 && echo "lwproxy слушает — ок"
+          kill %1 2>/dev/null || true
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: lwproxy-bin
+          path: proxy-src/target/release/lwproxy
+          retention-days: 90

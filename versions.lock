@@ -4,5 +4,6 @@ luanti-wasm=5bfae52b53605b39667dfc29cddd59c861e38111   # харнесс, main 20
 luanti-webport=6f532b5ed03a6aa70091412114b5dde3d33c6f87 # движок paradust7/luanti@webport (база ~5.18-dev)
 webshims=70653a91c974aa2b20df09a39f858d92e663c1a7        # сетевой слой (emsocket)
 zstd=f8745da6ff1ad1e7bab384bd1f9d742439278e99
+lwproxy=fc747956347c86d1a556ec756b698e4ac0e11cb9           # WSS-прокси, main 2026-09-09
 minetest_game=9e895af6e9feb98332fa1a778001442f5669bc20  # master 2026-10-30
 openssl=1.1.1n ; curl=7.82.0 ; libarchive=3.6.1 ; libzip=1.11.4 ; xterm=6.0.0 ; add-on-fit=0.11.0  # зафиксированы самим харнессом (fetch_sources.sh)
