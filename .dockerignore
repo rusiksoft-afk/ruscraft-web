@@ -1,0 +1,8 @@
+Dockerfile
+build/
+build-*/
+luanti
+www
+.git
+.github
+deploy.sh

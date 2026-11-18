@@ -1,8 +1,24 @@
+# --- харнесс luanti-wasm ---
+build/
+build-*/
+install/
 www/
-build*/
 emsdk/
-vendor/luanti-wasm/
+sources/zlib
+sources/libjpeg
+sources/libpng
+sources/freetype
+sources/zstd
+sources/webshims
+sources/luanti
+sources/minetest_game
+# распаковывается fetch_xterm.sh
+sources/xterm
+# --- RusCraft ---
+.research/
+vendor/
 node_modules/
 *.log
-.research/
-.DS_Store
+out/
+# В апстриме deploy.sh игнорируется — у нас он часть сборки.
+# (строку "deploy.sh" из апстримного .gitignore мы убрали)
