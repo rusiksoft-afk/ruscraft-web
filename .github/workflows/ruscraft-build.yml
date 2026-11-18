@@ -1,7 +1,11 @@
 name: ruscraft-build
 
-# Полная сборка Luanti→WASM (40–90 мин). Запуск: вручную (workflow_dispatch)
+# Полная сборка Luanti→WASM (~30–90 мин). Запуск: вручную (workflow_dispatch)
 # или тегом v* (для будущих релизов). PUSH-сборка не нужна — дорого.
+#
+# Схема: docker-этап base (окружение), затем ./build_all.sh выполняется ВНУТРИ
+# контейнера с примонтированной рабочей копией — упавшие логи configure и готовый
+# www/ остаются в workspace раннера и попадают в артефакты.
 on:
   workflow_dispatch:
     inputs:
@@ -13,7 +17,7 @@ on:
         options: [release, profile, debug]
 
 env:
-  HARNESS_IMAGE: ruscraft-harness
+  HARNESS_IMAGE: ruscraft-base
 
 jobs:
   web:
@@ -28,33 +32,48 @@ jobs:
           grep -q '^minetest_game=[0-9a-f]\{40\}' versions.lock
           grep -q '^luanti-wasm=[0-9a-f]\{40\}' versions.lock
 
-      - name: Docker build (emsdk + зависимости + Luanti + www)
+      - name: Docker build (образ окружения сборки)
         run: |
-          docker build --build-arg BUILD_KIND="${{ inputs.build_kind }}" -t "$HARNESS_IMAGE" .
-          # размер образа в лог — для контроля регрессий
+          docker build --target base -t "$HARNESS_IMAGE" .
           docker images "$HARNESS_IMAGE"
 
-      - name: Извлечение www/ из образа
+      - name: Сборка Luanti→WASM в контейнере
         run: |
-          mkdir -p out
-          docker run --rm -v "$PWD/out:/out" "$HARNESS_IMAGE" \
-            bash -c 'cp -r /luanti-wasm/www/* /out/ && echo "--- www:" && du -sh /out/* && ls -R /out | head -60'
+          docker run --rm -v "$PWD:/ci" -e BUILD_KIND="${{ inputs.build_kind }}" \
+            "$HARNESS_IMAGE" bash -c 'cd /ci && ./build_all.sh'
 
-      - name: Смоук-тест структуры артефакта
+      - name: Диагностика при падении (логи configure)
+        if: failure()
         run: |
-          test -f out/.htaccess
-          UUID=$(find out -maxdepth 1 -type d -regex '.*/[0-9a-f]\{12\}' -printf '%f')
+          for f in $(find build* -name config.log 2>/dev/null | head -6); do
+            echo "===== $f"; grep -B2 -A8 -E "configure: (error|fatal)" "$f" | tail -60;
+          done
+
+      - name: Прикрепить config.log к артефактам
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: config-logs
+          path: |
+            build*/**/config.log
+          if-no-files-found: ignore
+          retention-days: 14
+
+      - name: Смоук-тест структуры www/
+        run: |
+          test -f www/.htaccess
+          UUID=$(find www -maxdepth 1 -type d -regex '.*/[0-9a-f]\{12\}' -printf '%f')
           echo "release uuid: $UUID"
           test -n "$UUID"
-          test -f "out/$UUID/luanti.wasm"
-          test -f "out/$UUID/luanti.js"
-          test -f "out/$UUID/packs/base.pack"
-          test -f "out/$UUID/packs/minetest_game.pack"   # RusCraft: игровой пак
-          # htaccess апстрима обязателен для хостингов с Apache; для nginx см. deploy/
-          grep -i "Cross-Origin-Embedder-Policy" out/.htaccess
+          test -f "www/$UUID/luanti.wasm"
+          test -f "www/$UUID/luanti.js"
+          test -f "www/$UUID/packs/base.pack"
+          test -f "www/$UUID/packs/minetest_game.pack"   # RusCraft: игровой пак
+          du -sh www/$UUID/luanti.wasm www/$UUID/packs/*
+          grep -i "Cross-Origin-Embedder-Policy" www/.htaccess
 
       - uses: actions/upload-artifact@v4
         with:
           name: ruscraft-www
-          path: out/
+          path: www/
           retention-days: 30
