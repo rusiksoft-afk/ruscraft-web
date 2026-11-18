@@ -29,6 +29,9 @@ cat > cache/common.conf << EOF
 update_last_checked = disabled
 no_mtg_notification = true
 no_keycode_migration_warning = true
+# RusCraft: дефолты (значения common.conf перекрываются minetest.conf игрока
+# и launch-опциями страницы, так что игрок может сменить язык/настройки сам)
+language = ru
 EOF
 
 mkdir -p games

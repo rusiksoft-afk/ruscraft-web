@@ -1,5 +1,9 @@
 FROM ubuntu:22.04
 
+# RusCraft: профиль сборки (release|profile|debug) — см. common.sh
+ARG BUILD_KIND=release
+ENV BUILD_KIND=${BUILD_KIND}
+
 # install deps
 RUN \
 	   apt-get update \
@@ -16,7 +20,7 @@ RUN \
 
 COPY . /luanti-wasm
 
-# Build luanti-wasm
+# Build luanti-wasm (в конце build_www.sh дёргает наш deploy.sh — игровой пак и пр.)
 RUN \
 	   cd /luanti-wasm \
 	&& ls -la \
