@@ -11,7 +11,8 @@
 **Живой сайт:** https://ruscraft.example.com:8443/ — настоящий сертификат
 Let's Encrypt (ECC; http://ruscraft.example.com → 301 туда же; продление — acme.sh
 кроном, само перезапускает контейнер). Состав и порядок обновления: `deploy/server/README.md`.
-Мультиплеер: wss://ruscraft.example.com:8443/mtproxy (lwproxy выбран по умолчанию).
+Мультиплеер: **wss://ruscraft.example.com:8444** (lwproxy напрямую; E2E проверен:
+браузер-хост + десктоп Luanti по invite-порту). Не /mtproxy — тот ломает invite по IP.
 Важно: OPFS привязан к origin — миры со старого адреса `https://203.0.113.10:8443`
 на домене не видны; играем на домене.
 
